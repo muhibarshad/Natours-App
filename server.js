@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const app = require('./app');
 process.on('uncaughtException', (err) => {
   console.error(`${err.name} and ${err.message}`);
   // console.log(err);
@@ -9,11 +10,10 @@ process.on('uncaughtException', (err) => {
 dotenv.config({
   path: './config.env',
 });
-const app = require('./app');
 const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.PASSWORD);
 mongoose
-  // .connect('mongodb://localhost:27017/Natours-App', {
-  .connect(DB, {
+  .connect('mongodb://localhost:27017/Natours-Local-DB', {
+  // .connect(DB, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })

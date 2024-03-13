@@ -1,3 +1,4 @@
+//GET /api/products?sort=price,-createdAt&fields=name,price&limit=10&page=2&price[gte]=20&price[lte]=100
 class APIFeaturs {
   constructor(query, queryString) {
     this.query = query;
@@ -30,7 +31,7 @@ class APIFeaturs {
     } else {
       this.query = this.query.select('-__v');
     }
-    return this;
+    return this;aggregate
   }
   pagination() {
     const page = this.queryString.page * 1 || 1;
