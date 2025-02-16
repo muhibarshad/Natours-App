@@ -31,7 +31,7 @@ class APIFeaturs {
     } else {
       this.query = this.query.select('-__v');
     }
-    return this;aggregate
+    return this;
   }
   pagination() {
     const page = this.queryString.page * 1 || 1;

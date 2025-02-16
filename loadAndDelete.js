@@ -19,3 +19,19 @@ exports.loadData = (DB_name, model_name, file_name)=>{
        })
     });
 }
+exports.deleteData = async (DB_name, model_name)=>{
+   await mongoose.connect(`mongodb://localhost:27017/${DB_name}`).then(()=>{
+        console.log("Local Database connected Successfully")
+    }).catch((err)=>{
+        console.log("Error")
+    })
+    const result = await model_name.deleteMany({});
+    if(result.deletedCount > 0){
+        console.log("Data Deleted Successfully")
+    }
+    else{
+        console.log("Failed")
+        console.log(result)
+    }
+}
+

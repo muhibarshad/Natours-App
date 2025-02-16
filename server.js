@@ -12,7 +12,7 @@ dotenv.config({
 });
 const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.PASSWORD);
 mongoose
-  .connect('mongodb://localhost:27017/Natours-Local-DB', {
+  .connect('mongodb://localhost:27017/Natours-App', {
   // .connect(DB, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -23,7 +23,7 @@ mongoose
   .catch((error) => {
     console.error('Error connecting to database:', error);
   });
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, () => {
   console.log(`App Running on port ${PORT}`);
 });
