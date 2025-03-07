@@ -2,7 +2,44 @@
 const Tour = require('../model/tourModel');
 const catchAsync = require('../utils/catchAsync');
 const factory = require('../controllers/handleFactory')
-// const AppError = require('../utils/appError');
+const AppError = require('../utils/appError');
+const multer = require('multer');
+const sharp = require('sharp');
+// const multerDiskSrorage = multer.diskStorage({
+//   destination:(req,file ,cb )=>{
+//     cb(null, 'public/img/users')
+//   },
+//   filename:(req, file, cb)=>{
+//     const ext = file.mimetype.split('/')[1];
+//     cb(null, `user-${req.user.id}-${Date.now()}.${ext}`)
+//   }
+// })
+
+const  multerDiskSrorage = multer.memoryStorage();
+const multerFilter = (req, file, cb)=>{
+  if(file.mimetype.startsWith('image')){
+    cb(null,true )
+  }else{
+    cb(new AppError('Not an image ! Please upload the image',400),false );
+  }
+}
+const upload = multer({
+  storage:multerDiskSrorage,
+  fileFilter:multerFilter,
+})
+
+exports.uploadTourPhotos = upload.fields([
+  {name: 'imageCover', maxCount: 1}, 
+  {name :'images', maxCount:3}
+])
+
+// upload.single('image')
+// upload.array('images', 5)
+
+exports.resizeTourImages= (req, res, next)=>{
+  console.log(req.files)
+  next();
+}
 exports.topFiveCheaperQuery = (req, res, next) => {
   req.query.sort = 'price,-ratingsAverage';
   req.query.limit = 5;
@@ -88,3 +125,52 @@ exports.getMonthlyPlans = catchAsync(async (req, res) => {
     data: plan,
   });
 });
+
+//http://127.0.0.1:3000/api/v1/tours/tours-within/400/center/34.1117,-118.113491/unit/mi
+exports.toursWithin = catchAsync(async(req, res, next)=>{
+  const {distance , latlng, unit }= req.params;
+  const [lat, lng] = latlng.split(',');
+  const radius = unit ==='mi' ? distance/3963.2 : distance/6378.1;
+  if(!lat || !lng){
+    return next(new AppError('The location points are not correct',400));
+  }
+  const tours = await Tour.find({ startLocation: {$geoWithin: { $centerSphere: [[lng, lat], radius]}}})
+  res.status(200).json({
+    status:"success",
+    results : tours.length,
+    data:{
+      tours
+    }
+  })
+});
+
+exports.getDistances = catchAsync(async (req, res, next)=>{
+  const { latlng, unit }= req.params;
+  const [lat, lng] = latlng.split(',');
+  const multiplier = unit ==='mi'? 0.000621371 : 0.001;
+  if(!lat || !lng){
+    return next(new AppError('The location points are not correct',400));
+  }
+  const distances = await Tour.aggregate([{
+    $geoNear:{
+      near:{
+        type:'Point',
+        coordinates:[lng*1, lat*1]
+      }, distanceField:'distance',
+        distanceMultiplier:multiplier
+    }
+  },{
+    $project:{
+      name:1,
+      distance:1,
+    }
+  }])
+
+  res.status(200).json({
+    status:"success",
+    results : distances.length,
+    data:{
+      distances
+    }
+  })
+})

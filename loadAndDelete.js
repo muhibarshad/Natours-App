@@ -12,7 +12,7 @@ exports.loadData = (DB_name, model_name, file_name)=>{
             console.log(`Error during reading data\n Error : ${err} `)
         }
     const d = JSON.parse(data)
-       model_name.create(d).then(()=>{
+       model_name.create(d,{validateBeforeSave:false}).then(()=>{
         console.log(d)
        }).catch((err)=>{
         console.log(`Error during writing data\n Error : ${err} `)

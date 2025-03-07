@@ -1,6 +1,11 @@
 const loadDb = require('./loadAndDelete')
 const User = require('./model/userModel')
 const Tour = require('./model/tourModel')
-loadDb.loadData('Natours-App',User, './dev-data/data/users.json')
+const Review = require('./model/reviewModel')
+// loadDb.loadData('Natours-App',User, './dev-data/data/users.json')
 // loadDb.loadData('Natours-App',Tour, './dev-data/data/tours.json')
-// loadDb.deleteData('Natours-Local-DB',model)
+// loadDb.loadData('Natours-App',Review,'./dev-data/data/reviews.json')
+
+// loadDb.deleteData('Natours-App',User, './dev-data/data/users.json')
+// loadDb.deleteData('Natours-App',Tour, './dev-data/data/tours.json')
+// loadDb.deleteData('Natours-App',Review,'./dev-data/data/reviews.json')

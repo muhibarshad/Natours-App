@@ -36,7 +36,8 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       default: 4.7,
       max: [5, 'A tour ratings must be less or equal than 5'],
-      min: [1, 'A tour ratings must be greater or equal than 5'],
+      min: [1, 'A tour ratings must be greater or equal than 1'],
+      set: val=> Math.round(val*10)/10
     },
     ratingsQuantity: {
       type: Number,
@@ -142,6 +143,11 @@ tourSchema.pre(/^find/,function(next){
   });
   next();
 })
+
+tourSchema.index({price: 1, ratingsAverage:-1})
+tourSchema.index({slug:1})
+tourSchema.index({startLocation: '2dsphere'})
+
 // For embedding data into the document denormaizing 
 // tourSchema.pre('save',async function(next){
 //  const guidesPromises =  this.guides.map(async id=> await User.findById(id))
@@ -151,10 +157,10 @@ tourSchema.pre(/^find/,function(next){
 tourSchema.post(/^find/, function () {
   console.log(`Query took ${Date.now() - this.startTime} ms`);
 });
-tourSchema.pre('aggregate', function (next) {
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-  next();
-});
+// tourSchema.pre('aggregate', function (next) {
+//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+//   next();
+// });
 
 const Tour = mongoose.model('Tour', tourSchema);
 
